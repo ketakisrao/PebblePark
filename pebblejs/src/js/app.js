@@ -29,14 +29,14 @@ new UI.Image({
 });
 
 var leftTurn = new UI.Image({
-  image : "images/left_arrow_converted.png",
+  image : "images/left_arrow_converted2.png",
   position: new Vector2(105,100),
   size: new Vector2(40, 40)
 });
-var rightTurn = new UI.Image({image : "images/right_arrow_converted.png",
+var rightTurn = new UI.Image({image : "images/right_arrow_converted2.png",
   position: new Vector2(105,100),
   size: new Vector2(40, 40)});
-var straight = new UI.Image({image : "images/upward_arrow_converted.png",
+var straight = new UI.Image({image : "images/upward_arrow_converted2.png",
   position: new Vector2(105,100),
   size: new Vector2(40, 40)});
 
@@ -210,7 +210,7 @@ function success(pos) {
     
     getParkingLotList(pos.coords.latitude, pos.coords.longitude);
     firstTime = false;
-    var api = "location?lat=" + lat + "&lng=" + lng;
+    var api = "location/lat=" + lat + "&lng=" + lng;
     var URL = server + api;
 
     ajax(
@@ -287,7 +287,7 @@ function simulate(data){
   
   for(i=0;i<n;i++){
     var turn = data[i].maneuver;
-	 
+  /*	 
      for(j=0; j<1000000; j++){
       for(k=0;k<10000; k++){}
     }
@@ -305,7 +305,11 @@ function simulate(data){
     }
       
     changeImage("straight");
+    */
     
+    setTimeout(function(){changeImage("left");}, 1000);
+    setTimeout(function(){changeImage("right");}, 3000);
+    setTimeout(function(){changeImage("straight");}, 4000);
    
   }
 }
@@ -351,28 +355,32 @@ function changeImage(direction){
   console.log("inside change image");
   console.log("direction:" + direction);
   if(direction === "left"){
-    console.log("direction detected:" + direction);
+    
     image.image('images/left_arrow_converted.png');
     searchingText.text("Turn left");
     wind.add(leftTurn);
-    console.log("direction finalized:" + direction);
     
   }else if(direction === "right"){
-    console.log("direction detected:" + direction);
+    
     image.image('images/right_arrow_converted.png');
     searchingText.text("Turn right");
     wind.add(rightTurn);
-    console.log("direction finalized:" + direction);
     
   }else if(direction ===  "straight"){
-    console.log("direction detected:" + direction);
+    
     image.image('images/upward_arrow_converted.png');
     searchingText.text("Head straight");
     wind.add(straight);
-    console.log("direction finalized:" + direction);
   }
   //wind.add(image);
   wind.add(searchingText);
 }
 
 
+
+wind.on('click', 'select', function() {
+  console.log('Select clicked!');
+  //wind.remove(image);
+  //image.image('images/upward_arrow_converted.png');
+  //wind.add(image);
+});
