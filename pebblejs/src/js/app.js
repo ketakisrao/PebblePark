@@ -7,6 +7,7 @@
 var UI = require('ui');
 var ajax = require('ajax');
 var Vector2 = require('vector2');
+var Vibe = require('ui/vibe');
 
 // Show splash screen while waiting for data
 var server = "http://madvirus420.pythonanywhere.com/";
@@ -53,9 +54,14 @@ var rect = new UI.Rect({
                       backgroundColor: 'blue' 
                       });
 var backgroundRect = new UI.Rect( {size: new Vector2(size.x, size.y), backgroundColor: 'white'});
+
+
+
 wind.add(backgroundRect);
 wind.add(rect);
 wind.add(text);
+
+
 
 
 
@@ -171,7 +177,8 @@ ajax(
    console.log("Selected in data: " + data[e.itemIndex].name +data[e.itemIndex].lat + " " +  data[e.itemIndex].lng);
    getNavigationDirections(lat, lng, data[e.itemIndex].lat,data[e.itemIndex].lng);
    resultsMenu.hide();
-   
+  wind.remove(searchingText);
+   wind.remove(image);
    wind.remove(text);
    text.text("Navigation");
    wind.add(text);
@@ -208,9 +215,9 @@ function success(pos) {
   //get parking parkingLots list
   if(firstTime){
     
-    getParkingLotList(pos.coords.latitude, pos.coords.longitude);
+    setTimeout(function(){getParkingLotList(pos.coords.latitude, pos.coords.longitude);}, 2000);
     firstTime = false;
-    var api = "location/lat=" + lat + "&lng=" + lng;
+    var api = "location?lat=" + lat + "&lng=" + lng;
     var URL = server + api;
 
     ajax(
@@ -309,8 +316,8 @@ function simulate(data){
     
     setTimeout(function(){changeImage("left");}, 1000);
     setTimeout(function(){changeImage("right");}, 3000);
-    setTimeout(function(){changeImage("straight");}, 4000);
-   
+    setTimeout(function(){changeImage("straight");}, 5000);
+    setTimeout(function(){reachedDestination();}, 8500);
   }
 }
 /************************END OF SIMULATION DETAILS******************/
@@ -373,10 +380,42 @@ function changeImage(direction){
     wind.add(straight);
   }
   //wind.add(image);
+  Vibe.vibrate('short');
   wind.add(searchingText);
 }
 
+function reachedDestination(){
+  var destinationImage = new UI.Image({
+    image : "images/bmp_logo",
+    position: new Vector2(105,100),
+    size: new Vector2(40, 40)
+  });
+  wind.remove(image);
+  wind.remove(leftTurn);
+  wind.remove(rightTurn);
+  wind.remove(straight);
+  wind.remove(searchingText);
+  searchingText.text('You have reached the destination');
+  wind.add(destinationImage);
+  wind.add(searchingText);
+  
+  setTimeout(function(){wind.remove(destinationImage); showParkingPass();},2000);
 
+}
+
+function showParkingPass(){
+  wind.remove(image);
+  wind.remove(leftTurn);
+  wind.remove(rightTurn);
+  wind.remove(straight);
+  wind.remove(searchingText);
+  var barCode = new UI.Image({
+    image : "images/bmp_bar_code",
+    position: new Vector2(0,0),
+    size: new Vector2(144, 168)
+  });
+  wind.add(barCode);
+}
 
 wind.on('click', 'select', function() {
   console.log('Select clicked!');
